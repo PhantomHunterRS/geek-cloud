@@ -20,6 +20,7 @@ public class Controller implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
 
+
     }
     public void connect(){
         try {
@@ -27,5 +28,8 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void Dispose(){
+
     }
 }
