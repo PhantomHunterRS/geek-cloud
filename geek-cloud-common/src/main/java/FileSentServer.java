@@ -1,6 +1,7 @@
 public class FileSentServer extends ServiceMessage {
     private String fileName;
 
+
     public String getFileName() {
         return fileName;
     }

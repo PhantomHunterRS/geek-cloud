@@ -15,35 +15,37 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         new Server().start();
-
-
     }
+        public void start(){
+            EventLoopGroup bossGroup = new NioEventLoopGroup(5);
+            EventLoopGroup workerGroup = new NioEventLoopGroup();
+            ServerBootstrap configuringServer = new ServerBootstrap();
+            try {
+                configuringServer.group(bossGroup, workerGroup);
+                configuringServer.channel(NioServerSocketChannel.class);
+                configuringServer.childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast(
+                                new ClientServerHandler(),
+                                new ObjectDecoder(1024 * 1024 * 5, ClassResolvers.cacheDisabled(null)),
+                                new ObjectEncoder()
 
-    public void start(){
-        EventLoopGroup incomingConnections = new NioEventLoopGroup();
-        EventLoopGroup processingDataStream = new NioEventLoopGroup();
-        ServerBootstrap configuringServer = new ServerBootstrap();
-        try {
-            configuringServer.group(incomingConnections, processingDataStream);
-            configuringServer.channel(NioServerSocketChannel.class);
-            configuringServer.childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast(
-                            new ObjectDecoder(1024 * 1024 * 5, ClassResolvers.cacheDisabled(null)),
-                            new ObjectEncoder(),
-                            new ClientServerHandler()
-                    );
-                }
-            });
-            ChannelFuture future = configuringServer.bind(PORT).sync();
-            future.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            incomingConnections.shutdownGracefully();
-            processingDataStream.shutdownGracefully();
+                        );
+                        System.out.println("Client connect");
+                    }
+                });
+                ChannelFuture future = configuringServer.bind(PORT).sync();
+                future.channel().closeFuture().sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                workerGroup.shutdownGracefully();
+                bossGroup.shutdownGracefully();
 
+            }
         }
     }
-}
+
+
+
