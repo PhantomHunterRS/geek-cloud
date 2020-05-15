@@ -17,20 +17,22 @@ public class Server {
         new Server().start();
     }
         public void start(){
-            EventLoopGroup incomingConnections = new NioEventLoopGroup();
-            EventLoopGroup processingDataStream = new NioEventLoopGroup();
+            EventLoopGroup bossGroup = new NioEventLoopGroup(5);
+            EventLoopGroup workerGroup = new NioEventLoopGroup();
             ServerBootstrap configuringServer = new ServerBootstrap();
             try {
-                configuringServer.group(incomingConnections, processingDataStream);
+                configuringServer.group(bossGroup, workerGroup);
                 configuringServer.channel(NioServerSocketChannel.class);
                 configuringServer.childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(
+                                new ClientServerHandler(),
                                 new ObjectDecoder(1024 * 1024 * 5, ClassResolvers.cacheDisabled(null)),
-                                new ObjectEncoder(),
-                                new ClientServerHandler()
+                                new ObjectEncoder()
+
                         );
+                        System.out.println("Client connect");
                     }
                 });
                 ChannelFuture future = configuringServer.bind(PORT).sync();
@@ -38,8 +40,8 @@ public class Server {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                incomingConnections.shutdownGracefully();
-                processingDataStream.shutdownGracefully();
+                workerGroup.shutdownGracefully();
+                bossGroup.shutdownGracefully();
 
             }
         }
