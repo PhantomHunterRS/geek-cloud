@@ -7,7 +7,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.*;
 import javafx.fxml.Initializable;
 
 
@@ -32,9 +31,9 @@ public class Controller implements Initializable {
                     .handler(new ChannelInitializer<SocketChannel>() {
                                  @Override
                                  protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                     socketChannel.pipeline().addLast(
-                                             new ClientAdapterHandler()
-                                     );
+//                                     socketChannel.pipeline().addLast(
+//                                             new ClientAdapterHandler()
+//                                     );
                                      System.out.println("Client connected");
                                  }
                     });
