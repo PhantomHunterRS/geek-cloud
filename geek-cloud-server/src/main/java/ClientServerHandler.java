@@ -11,6 +11,9 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
             if (in.readByte() == 15){
                 System.out.println("going file ");
             }
+            if (false){
+
+            }
             System.out.print((char) in.readByte());
         }
         ((ByteBuf) msg).release();
