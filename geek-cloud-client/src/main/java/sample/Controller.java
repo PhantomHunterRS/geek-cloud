@@ -9,7 +9,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -24,13 +26,19 @@ public class Controller implements Initializable {
     private Socket socket;
     private String IP_ADRESS = "127.0.0.1";
     private int PORT = 8989;
+    private Path path = Paths.get("./Cloud-server");
+    private DirectoryStream<Path> files = null;
 
     @FXML
     private TextArea fileOnServer;
-//    @FXML
-//    @FXML
-//    @FXML
-//    @FXML
+    @FXML
+    private TextField loadingPathFile;
+    @FXML
+    private TextArea bootProcess;
+    @FXML
+    private Button updateFiles;
+    @FXML
+    private Button loadingFiles;
 //    @FXML
 
 
@@ -39,7 +47,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         start();
-        listFiles();
+        viewListFiles();
     }
 
     public void start(){
@@ -53,7 +61,6 @@ public class Controller implements Initializable {
 //                                     socketChannel.pipeline().addLast(
 //                                             new ClientAdapterHandler()
 //                                     );
-                                     System.out.println("Client connected");
                                  }
                     });
                         Channel channel = bootstrap.connect(IP_ADRESS, PORT).sync().channel();
@@ -65,19 +72,37 @@ public class Controller implements Initializable {
             clientGroup.shutdownGracefully();
         }
     }
-    public void listFiles(){
-        fileOnServer.clear();
-        Path path = Paths.get("./Cloud-server");
+    public DirectoryStream<Path> listFiles(){
         try {
-            DirectoryStream<Path> files = Files.newDirectoryStream(path);
-            for (Path file:files) {
-                fileOnServer.appendText(file.getFileName().toString());
-                fileOnServer.appendText("\n");
-            }
+            files = Files.newDirectoryStream(path);
         } catch (IOException e) {
             fileOnServer.setText("File not Find");
         }
+        return files;
+    }
+    public void viewListFiles(){
+            files = listFiles();
+            fileOnServer.clear();
+        for (Path file:files) {
+            fileOnServer.appendText(file.getFileName().toString());
+            fileOnServer.appendText("\n");
+        }
+    }
+    public void infoLoadFile() throws IOException {
+        files = listFiles();
+            for (Path file:files) {
+                if (!Files.isDirectory(file) && (file.getFileName().toString().equals(loadingPathFile.getText()))){
+                    sendFileToClient(file);
+                    bootProcess.appendText(file.getFileName().toString()+ "  \t - " +Files.size(file)+" bytes \t" + " ..........\t "+" Completed \n" );
 
+                }
+            }
+    }
+    public void sendFileToClient(Path path) throws IOException {
+        byte x = 96;
+        String nameFile = path.getFileName().toString();
+        int nameLength = nameFile.length();
+        long sizeFile = Files.size(path);
     }
     public void Dispose() {
 

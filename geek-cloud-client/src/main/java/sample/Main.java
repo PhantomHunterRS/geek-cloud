@@ -16,6 +16,7 @@ public class Main extends Application {
         Parent root = fxmlLoader.load(getClass().getResource("/sample.fxml"));
         primaryStage.setTitle("Apple Cloud Storage");
         primaryStage.setScene(new Scene(root, 500, 340));
+
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(event -> {

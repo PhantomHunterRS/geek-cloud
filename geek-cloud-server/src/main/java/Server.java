@@ -32,7 +32,6 @@ public class Server {
                                 new ObjectEncoder()
 
                         );
-                        System.out.println("Client connect");
                     }
                 });
                 ChannelFuture future = configuringServer.bind(PORT).sync();

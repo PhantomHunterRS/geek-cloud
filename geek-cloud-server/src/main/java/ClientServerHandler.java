@@ -8,7 +8,7 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
         while ((in.isReadable())) {
-            if (in.readByte() == 15){
+            if (in.readByte() == 25){
                 System.out.println("going file ");
             }
             if (false){
