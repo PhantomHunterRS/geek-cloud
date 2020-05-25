@@ -14,6 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -26,8 +27,9 @@ public class Controller implements Initializable {
     private Socket socket;
     private String IP_ADRESS = "127.0.0.1";
     private int PORT = 8989;
-    private Path path = Paths.get("./Cloud-server");
+    private Path path = Paths.get("./Cloud-client");
     private DirectoryStream<Path> files = null;
+    private Channel channelClient;
 
     @FXML
     private TextArea fileOnServer;
@@ -55,12 +57,14 @@ public class Controller implements Initializable {
         try {
             Bootstrap bootstrap = new Bootstrap().group(clientGroup)
                     .channel(NioSocketChannel.class)
+                    //.remoteAddress( new InetSocketAddress(IP_ADRESS,PORT))
                     .handler(new ChannelInitializer<SocketChannel>() {
                                  @Override
                                  protected void initChannel(SocketChannel socketChannel) throws Exception {
 //                                     socketChannel.pipeline().addLast(
 //                                             new ClientAdapterHandler()
 //                                     );
+                                     channelClient = socketChannel;
                                  }
                     });
                         Channel channel = bootstrap.connect(IP_ADRESS, PORT).sync().channel();
@@ -92,18 +96,12 @@ public class Controller implements Initializable {
         files = listFiles();
             for (Path file:files) {
                 if (!Files.isDirectory(file) && (file.getFileName().toString().equals(loadingPathFile.getText()))){
-                    sendFileToClient(file);
                     bootProcess.appendText(file.getFileName().toString()+ "  \t - " +Files.size(file)+" bytes \t" + " ..........\t "+" Completed \n" );
 
                 }
             }
     }
-    public void sendFileToClient(Path path) throws IOException {
-        byte x = 96;
-        String nameFile = path.getFileName().toString();
-        int nameLength = nameFile.length();
-        long sizeFile = Files.size(path);
-    }
+
     public void Dispose() {
 
     }

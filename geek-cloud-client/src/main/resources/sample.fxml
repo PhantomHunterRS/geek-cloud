@@ -26,11 +26,29 @@
          <children>
             <HBox fx:id="loadingReport" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="500.0">
                <children>
-                  <TextArea fx:id="bootProcess" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="385.0" wrapText="true">
+                  <TextArea fx:id="bootProcess" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="270.0" wrapText="true">
                      <font>
                         <Font name="Times New Roman" size="14.0" />
                      </font>
                   </TextArea>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="115.0">
+                     <children>
+                        <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="115.0" text="Files on Client:" textAlignment="CENTER">
+                           <font>
+                              <Font name="Times New Roman" size="14.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="filesOnClient" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0" prefWidth="115.0" wrapText="true" />
+                        <Button fx:id="updateFilesClient" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewListFiles" prefHeight="30.0" prefWidth="60.0" text="Update">
+                           <font>
+                              <Font name="Times New Roman" size="12.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="2.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="115.0">
                      <children>
                         <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="115.0" text="Files on Server:" textAlignment="CENTER">
@@ -38,8 +56,8 @@
                               <Font name="Times New Roman" size="14.0" />
                            </font>
                         </Label>
-                        <TextArea fx:id="fileOnServer" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0" prefWidth="115.0" wrapText="true" />
-                        <Button fx:id="updateFiles" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewListFiles" prefHeight="30.0" prefWidth="60.0" text="Update">
+                        <TextArea fx:id="filesOnServer" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0" prefWidth="115.0" wrapText="true" />
+                        <Button fx:id="updateFilesServer" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#viewListFiles" prefHeight="30.0" prefWidth="60.0" text="Update">
                            <font>
                               <Font name="Times New Roman" size="12.0" />
                            </font>
