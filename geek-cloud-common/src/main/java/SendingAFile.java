@@ -27,7 +27,5 @@ public class SendingAFile{
         if(channelFutureListener != null){
             channelFuture.addListener(channelFutureListener);
         }
-
     }
-
 }
