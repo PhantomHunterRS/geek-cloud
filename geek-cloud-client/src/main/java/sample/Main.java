@@ -20,7 +20,6 @@ public class Main extends Application {
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(event -> {
-            c.Dispose();
             Platform.exit();
             System.exit(0);
         });

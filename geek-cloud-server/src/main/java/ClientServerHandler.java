@@ -3,6 +3,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +11,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
 import java.util.Set;
 
 public class ClientServerHandler extends ChannelInboundHandlerAdapter {
@@ -35,21 +37,21 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
                 switch (in.readByte()) {
                     case (26):
                         type = SENDING.FILESETTINGS;
+                        System.out.println("this is file ");
                         break;
                     case (69):
                         type = SENDING.MESSAGE;
-                        ctx.fireChannelRead(msg);
                         break;
                     case (96):
                         type = SENDING.COMMAND;
-                        ctx.fireChannelRead(msg);
                         break;
                     default:
-                        type = SENDING.NOTHING;
+                        type = SENDING.MESSAGE;
                 }
             }else ctx.close();
             if(type == SENDING.FILESETTINGS && in.readableBytes() == 4 && nameLengthFile == 0){
                 nameLengthFile = in.readInt();
+                System.out.println("name");
             }
             if(type == SENDING.FILESETTINGS && in.readableBytes() == nameLengthFile && nameFile == ""){
                 byte [] file = in.array();
@@ -57,7 +59,7 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
 //                 Set<PosixFilePermission> posixFilePermissionSet = PosixFilePermissions.fromString("rw-------");
 //                 FileAttribute<Set<PosixFilePermission>> fileAttribute = PosixFilePermissions.asFileAttribute(posixFilePermissionSet);
 //                 newPathFile = Files.createFile(Paths.get("./Cloud-server/"+ nameFile),fileAttribute);
-                Files.write(Paths.get("./Cloud-server/"+ "_"+nameFile),new byte[]{},StandardOpenOption.CREATE);
+                newPathFile = Files.write(Paths.get("./Cloud-server/"+ "_"+nameFile),new byte[]{},StandardOpenOption.CREATE);
             }
             if (type == SENDING.FILESETTINGS && nameFile != "" && sizeFile ==0){
                 sizeFile = in.readLong();
@@ -70,7 +72,8 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
             if (type == SENDING.MESSAGE){
-
+                while (in.readableBytes()>0){
+                System.out.println(in.readByte());}
             }
         }
         if(in.readableBytes() == 0)

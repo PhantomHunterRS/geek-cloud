@@ -1,7 +1,9 @@
 package sample;
 
+import SEND.SendingAFile;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -9,6 +11,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.PointLight;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -26,10 +29,11 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
     private Socket socket;
     private String IP_ADRESS = "127.0.0.1";
-    private int PORT = 8989;
+    private int PORT = 9989;
     private Path path = Paths.get("./Cloud-client");
     private DirectoryStream<Path> files = null;
-    private Channel channelClient;
+    public Channel channelClient;
+
 
     @FXML
     private TextArea fileOnServer;
@@ -49,7 +53,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         start();
-        viewListFiles();
+        //viewListFiles();
     }
 
     public void start(){
@@ -60,16 +64,16 @@ public class Controller implements Initializable {
                     //.remoteAddress( new InetSocketAddress(IP_ADRESS,PORT))
                     .handler(new ChannelInitializer<SocketChannel>() {
                                  @Override
-                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
+                                 public void initChannel(SocketChannel socketChannel) throws Exception {
 //                                     socketChannel.pipeline().addLast(
 //                                             new ClientAdapterHandler()
 //                                     );
                                      channelClient = socketChannel;
                                  }
                     });
-                        Channel channel = bootstrap.connect(IP_ADRESS, PORT).sync().channel();
-                            channel.write("Hi\n");
-
+                        Channel channelClient = bootstrap.connect(IP_ADRESS, PORT).sync().channel();
+            ChannelFuture channelFuture = channelClient.connect(new InetSocketAddress(IP_ADRESS, PORT)).sync();
+            channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
@@ -96,13 +100,16 @@ public class Controller implements Initializable {
         files = listFiles();
             for (Path file:files) {
                 if (!Files.isDirectory(file) && (file.getFileName().toString().equals(loadingPathFile.getText()))){
-                    bootProcess.appendText(file.getFileName().toString()+ "  \t - " +Files.size(file)+" bytes \t" + " ..........\t "+" Completed \n" );
-
+                    bootProcess.appendText(file.getFileName().toString()+ "  \t - " +Files.size(file)+" bytes \t" + file.toFile().toString().length() +" \t "+" Completed \n" );
+                    SendingAFile.sendFile(file,channelClient,future ->{
+                        if (!future.isSuccess()){
+                            System.out.println("no");
+                            future.cause().printStackTrace();
+                        }
+                        if(future.isSuccess()) System.out.println("File send");
+                    });
                 }
             }
     }
 
-    public void Dispose() {
-
-    }
 }
