@@ -19,13 +19,9 @@ public class SendingAFile{
         FileRegion fileRegion = new DefaultFileRegion(path.toFile(),0, sizeFile);
 
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.directBuffer(1 + 4 +nameFileLength + 8) ;
-        System.out.print(SIGNAL_FILE_BYTE + " ");
         byteBuf.writeByte(SIGNAL_FILE_BYTE);
-        System.out.print(nameFileLength+ " ");
         byteBuf.writeInt(nameFileLength);
-        System.out.print(new String(nameFile) + " ");
         byteBuf.writeBytes(nameFile);
-        System.out.print(sizeFile+ " ");
         byteBuf.writeLong(sizeFile);
         channel.writeAndFlush(byteBuf);
 

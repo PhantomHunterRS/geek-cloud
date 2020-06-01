@@ -27,12 +27,10 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
-    private Socket socket;
-    private String IP_ADRESS = "127.0.0.1";
-    private int PORT = 9989;
-    private Path path = Paths.get("./Cloud-client");
-    private DirectoryStream<Path> files = null;
-    public Channel channelClient;
+
+    public Path path = Paths.get("./Cloud-client");
+    public DirectoryStream<Path> files = null;
+    public NetworkConnect nc;
 
 
     @FXML
@@ -52,34 +50,12 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        start();
+        nc = new NetworkConnect();
+        nc.start();
         //viewListFiles();
     }
 
-    public void start(){
-        EventLoopGroup clientGroup = new NioEventLoopGroup();
-        try {
-            Bootstrap bootstrap = new Bootstrap().group(clientGroup)
-                    .channel(NioSocketChannel.class)
-                    //.remoteAddress( new InetSocketAddress(IP_ADRESS,PORT))
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                                 @Override
-                                 public void initChannel(SocketChannel socketChannel) throws Exception {
-//                                     socketChannel.pipeline().addLast(
-//                                             new ClientAdapterHandler()
-//                                     );
-                                     channelClient = socketChannel;
-                                 }
-                    });
-                        Channel channelClient = bootstrap.connect(IP_ADRESS, PORT).sync().channel();
-            ChannelFuture channelFuture = channelClient.connect(new InetSocketAddress(IP_ADRESS, PORT)).sync();
-            channelFuture.channel().closeFuture().sync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            clientGroup.shutdownGracefully();
-        }
-    }
+
     public DirectoryStream<Path> listFiles(){
         try {
             files = Files.newDirectoryStream(path);
@@ -101,7 +77,7 @@ public class Controller implements Initializable {
             for (Path file:files) {
                 if (!Files.isDirectory(file) && (file.getFileName().toString().equals(loadingPathFile.getText()))){
                     bootProcess.appendText(file.getFileName().toString()+ "  \t - " +Files.size(file)+" bytes \t" + file.toFile().toString().length() +" \t "+" Completed \n" );
-                    SendingAFile.sendFile(file,channelClient,future ->{
+                    SendingAFile.sendFile(file,nc.getChannelClient(),future ->{
                         if (!future.isSuccess()){
                             System.out.println("no");
                             future.cause().printStackTrace();
