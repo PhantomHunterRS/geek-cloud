@@ -6,9 +6,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
+
 
 public class Server {
     private static final int PORT = 8989;
@@ -25,14 +23,11 @@ public class Server {
                 configuringServer.channel(NioServerSocketChannel.class);
                 configuringServer.childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    public void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(
-                                new ClientServerHandler(),
-                                new ObjectDecoder(1024 * 1024 * 5, ClassResolvers.cacheDisabled(null)),
-                                new ObjectEncoder()
-
+                                new ClientServerHandler()//,
+                                //new
                         );
-                        System.out.println("Client connect");
                     }
                 });
                 ChannelFuture future = configuringServer.bind(PORT).sync();
@@ -42,7 +37,6 @@ public class Server {
             } finally {
                 workerGroup.shutdownGracefully();
                 bossGroup.shutdownGracefully();
-
             }
         }
     }
