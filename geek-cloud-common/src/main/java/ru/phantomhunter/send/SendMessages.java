@@ -1,4 +1,4 @@
-package SEND;
+package ru.phantomhunter.send;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

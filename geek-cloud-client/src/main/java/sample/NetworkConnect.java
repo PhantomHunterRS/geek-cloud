@@ -37,9 +37,6 @@ public class NetworkConnect {
                             System.out.println("connect" + channelClient.toString());
                         }
                     });
-
-
-
             ChannelFuture channelFuture = bootstrap.connect().sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {

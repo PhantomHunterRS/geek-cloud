@@ -1,24 +1,13 @@
 package sample;
 
-import SEND.SendingAFile;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import ru.phantomhunter.send.SendingAFile;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.PointLight;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -51,7 +40,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         nc = new NetworkConnect();
-        nc.start();
+        new Thread(() -> nc.start()).start();
         //viewListFiles();
     }
 

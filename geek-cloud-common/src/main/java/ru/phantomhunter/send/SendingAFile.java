@@ -1,4 +1,4 @@
-package SEND;
+package ru.phantomhunter.send;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -13,16 +13,20 @@ public class SendingAFile{
     public static void sendFile (Path path, Channel channel, ChannelFutureListener channelFutureListener) throws IOException {
         byte SIGNAL_FILE_BYTE = 26;
         byte[] nameFile = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        int nameFileLength = path.toFile().toString().length();
+        int nameFileLength = path.getFileName().toString().length();
         long sizeFile = Files.size(path) ;
 
         FileRegion fileRegion = new DefaultFileRegion(path.toFile(),0, sizeFile);
 
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.directBuffer(1 + 4 +nameFileLength + 8) ;
         byteBuf.writeByte(SIGNAL_FILE_BYTE);
+        System.out.print ("SB " + SIGNAL_FILE_BYTE + " ");
         byteBuf.writeInt(nameFileLength);
+        System.out.print("Name Length " + nameFileLength);
         byteBuf.writeBytes(nameFile);
+        System.out.print("Name File " + nameFile + " ");
         byteBuf.writeLong(sizeFile);
+        System.out.print("size " + sizeFile + " ");
         channel.writeAndFlush(byteBuf);
 
         ChannelFuture channelFuture = channel.writeAndFlush(fileRegion);

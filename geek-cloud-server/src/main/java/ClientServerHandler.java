@@ -28,6 +28,7 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
     private int commandLength = 0;
     private String command = "";
     private Path newPathFile;
+    private byte[] writeFiles;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -49,13 +50,14 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
                         type = SENDING.MESSAGE;
                 }
             }else ctx.close();
-            if(type == SENDING.FILESETTINGS && in.readableBytes() == 4 && nameLengthFile == 0){
+            if(type == SENDING.FILESETTINGS && in.readableBytes() >= 4 && nameLengthFile == 0){
                 nameLengthFile = in.readInt();
-                System.out.println("name");
             }
-            if(type == SENDING.FILESETTINGS && in.readableBytes() == nameLengthFile && nameFile == ""){
-                byte [] file = in.array();
+            if(type == SENDING.FILESETTINGS && in.readableBytes() <= nameLengthFile){
+                byte [] file = new byte[nameLengthFile];
+                in.readBytes(file,0,nameLengthFile);
                  nameFile = new String(file);
+                System.out.println(nameFile +" go on server ");
 //                 Set<PosixFilePermission> posixFilePermissionSet = PosixFilePermissions.fromString("rw-------");
 //                 FileAttribute<Set<PosixFilePermission>> fileAttribute = PosixFilePermissions.asFileAttribute(posixFilePermissionSet);
 //                 newPathFile = Files.createFile(Paths.get("./Cloud-server/"+ nameFile),fileAttribute);
@@ -65,10 +67,18 @@ public class ClientServerHandler extends ChannelInboundHandlerAdapter {
                 sizeFile = in.readLong();
                 type = SENDING.FILE;
             }
-            if (type == SENDING.FILE){
-                if(in.readableBytes()>0 && readFilebyte>=sizeFile){
+            if (type == SENDING.FILE) {
+                System.out.println("write file");
+                while (in.readableBytes() > 0 && readFilebyte >= sizeFile) {
+                    writeFiles = new byte[100];
+                    in.readBytes(writeFiles);
+                    Files.write(newPathFile,writeFiles, StandardOpenOption.APPEND);
+
                     readFilebyte++;
-                    Files.write(newPathFile, new byte[]{in.readByte()},StandardOpenOption.APPEND);
+                    if (readFilebyte == sizeFile) {
+                        type = SENDING.NOTHING;
+                        break;
+                    }
                 }
             }
             if (type == SENDING.MESSAGE){
